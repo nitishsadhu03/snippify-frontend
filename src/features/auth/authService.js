@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = "http://localhost:8000"
 
 const REGISTER_URL = `${BASE_URL}/api/auth/users/`
 const LOGIN_URL = `${BASE_URL}/api/auth/jwt/create/`

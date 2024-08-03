@@ -20,7 +20,7 @@ const Navbar = () => {
       </div>
       <div className="flex gap-x-5">
         <Link to="/login">
-            <Button className="border-2 border-white text-white text-lg hover:bg-white hover:text-black">Login</Button>
+            <Button className="border-2 border-white text-white text-lg bg-black hover:bg-white hover:text-black">Login</Button>
         </Link>
         <Link to="/register">
             <Button className="bg-white text-black text-lg hover:bg-black hover:text-white hover:border-2 hover:border-white">Register</Button>

@@ -1,31 +1,21 @@
+// Login.js
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react"
-import { useDispatch, useSelector } from 'react-redux'
-import { login, reset, getUserInfo } from '../features/auth/authSlice'
-import { toast } from 'react-toastify'
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from 'react-redux';
+import { login } from '@/features/auth/authSlice';
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z
-    .string()
-    .min(8, { message: "Too short" })
-    .max(15, { message: "Too long" }),
+  password: z.string().min(8, { message: "Too short" }).max(15, { message: "Too long" }),
 });
 
 const Login = () => {
@@ -39,30 +29,19 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
 
-  function onSubmit(values) {
-    const userData = {
-        email: values.email,
-        password: values.password,
+  const onSubmit = async (values) => {
+    const credentials = {
+      email: values.email,
+      password: values.password,
+    };
+    try {
+      await dispatch(login(credentials)).unwrap();
+      navigate('/home');
+    } catch (error) {
+      toast.error(error.message);
     }
-    dispatch(login(userData))
-  }
-
-  useEffect(() => {
-    if (isError) {
-        toast.error(message)
-    }
-
-    if (isSuccess || user) {
-        navigate("/home")
-    }
-
-    dispatch(reset())
-    dispatch(getUserInfo())
-
-}, [isError, isSuccess, user, navigate, dispatch, message, isLoading])
-
+  };
 
   return (
     <div className="h-screen lg:h-screen w-screen flex flex-col lg:gap-2 justify-center items-center bg-black py-6 px-4">
@@ -70,11 +49,7 @@ const Login = () => {
         to="/"
         className="flex items-center mb-6 text-lg lg:text-2xl font-bold text-white "
       >
-        <img
-          className="w-6 h-6 lg:w-8 lg:h-8 mr-2"
-          src="/assets/logo.png"
-          alt="logo"
-        />
+        <img className="w-6 h-6 lg:w-8 lg:h-8 mr-2" src="/assets/logo.png" alt="logo" />
         SNIPPIFY
       </Link>
       <div className="flex flex-col gap-10 rounded-xl shadow-2xl bg-white px-10 py-8 w-80 lg:w-96">
@@ -120,12 +95,13 @@ const Login = () => {
                 Register here
               </Link>
             </p>
-            <Button type="submit" className="w-full bg-rose-600 text-white">
+            <Button type="submit" className="w-full bg-rose-600 text-white hover:bg-rose-500">
               Login
             </Button>
           </form>
         </Form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

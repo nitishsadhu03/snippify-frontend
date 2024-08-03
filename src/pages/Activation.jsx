@@ -1,41 +1,28 @@
-import { Button } from "@/components/ui/button"
-import { useEffect } from "react";
+// Activation.js
+import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { activate, reset } from "../features/auth/authSlice";
-import { toast } from "react-toastify";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { BACKEND_URL } from "@/utils/env";
 
 const Activation = () => {
-
   const { uid, token } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isError, isSuccess, message } = useSelector((state) => state.auth);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const userData = {
+  const handleActivate = async () => {
+    const activationData = {
       uid,
       token,
     };
-    dispatch(activate(userData));
-    toast.success("Your account has been activated! You can login now");
+    try {
+      await axios.post(`${BACKEND_URL}/api/auth/users/activation/`, activationData);
+      toast.success("Account Activated");
+      navigate('/login');
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-
-    if (isSuccess) {
-      navigate("/login");
-    }
-
-    dispatch(reset());
-  }, [isError, isSuccess, message, navigate, dispatch]);
 
   return (
     <div className="min-h-screen bg-black w-full">
@@ -57,15 +44,15 @@ const Activation = () => {
           <Button
             className="rounded-full mt-10 bg-rose-600 px-5 py-3 text-lg font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
             type="submit"
-            onClick={handleSubmit}
-            
+            onClick={handleActivate}
           >
             Activate account
           </Button>
         </div>
       </div>
+      <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
-export default Activation
+export default Activation;

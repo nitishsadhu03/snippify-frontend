@@ -9,6 +9,7 @@ import CreateSnippet from "./pages/CreateSnippet";
 import { Provider } from "react-redux";
 import store from "./app/store";
 import setupAxiosInterceptors from "./utils/setupAxios";
+import SnippetPage from "./pages/SnippetPage";
 
 setupAxiosInterceptors();
 
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: "/create-snippet",
     element: <CreateSnippet />,
+  },
+  {
+    path: "/snippet/:id",
+    element: <SnippetPage/>,
   },
 ]);
 

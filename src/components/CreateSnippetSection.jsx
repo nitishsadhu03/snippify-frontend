@@ -17,9 +17,11 @@ import axios from "axios";
 import { BACKEND_URL } from "@/utils/env";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const CreateSnippetSection = () => {
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   const [snippetName, setSnippetName] = useState("");
   const [snippetDesc, setSnippetDesc] = useState("");
@@ -110,6 +112,7 @@ const CreateSnippetSection = () => {
       );
       console.log("Snippet saved successfully:", response.data);
       toast.success("Snippet saved successfully!");
+      navigate('/home');
     } catch (error) {
       toast.error("Error saving snippet!");
       console.error("Error saving snippet:", error);

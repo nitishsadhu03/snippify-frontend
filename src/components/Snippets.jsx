@@ -105,15 +105,15 @@ const Snippets = () => {
               </button>
               <div className="bg-zinc-800 flex justify-evenly py-2.5 px-2 rounded-lg">
               <p className="flex gap-2 items-center justify-center">
-                <Heart className="text-rose-600 fill-rose-600 transition ease-in-out delay-150 hover:scale-125 duration-300" />
+                <Heart className="text-rose-600 fill-rose-600" />
                 {snippet.liked_by_count}
 
               </p>
               <p className="flex gap-2 items-center justify-center">
-                <MessageSquareText className="text-blue-500 transition ease-in-out delay-150 hover:scale-125 duration-300" />
+                <MessageSquareText className="text-blue-500" />
                 {snippet.comments_count}
               </p>
-                <Share2 className="text-green-600 transition ease-in-out delay-150 hover:scale-125 duration-300" />
+                <Share2 className="text-green-600" />
               </div>
             </div>
           ))}

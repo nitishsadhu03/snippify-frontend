@@ -40,11 +40,11 @@ const Leftbar = () => {
           <BellRing />
           <p className="text-xl cursor-pointer">Activity</p>
         </Link>
-        <Link className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
+        <Link to="/search" className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
           <Search />
           <p className="text-xl cursor-pointer">Search</p>
         </Link>
-        <Link className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
+        <Link to="/profile" className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
           <CircleUserRound />
           <p className="text-xl cursor-pointer">Profile</p>
         </Link>

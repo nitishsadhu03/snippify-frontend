@@ -10,6 +10,9 @@ import { Provider } from "react-redux";
 import store from "./app/store";
 import setupAxiosInterceptors from "./utils/setupAxios";
 import SnippetPage from "./pages/SnippetPage";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import Search from "./pages/Search";
 
 setupAxiosInterceptors();
 
@@ -41,6 +44,18 @@ const router = createBrowserRouter([
   {
     path: "/snippet/:id",
     element: <SnippetPage/>,
+  },
+  {
+    path: "/profile",
+    element: <Profile/>,
+  },
+  {
+    path: "/edit-profile/:id",
+    element: <EditProfile/>,
+  },
+  {
+    path: "/search",
+    element: <Search/>,
   },
 ]);
 

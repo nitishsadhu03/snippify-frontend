@@ -4,18 +4,29 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useDispatch } from 'react-redux';
-import { login } from '@/features/auth/authSlice';
+import { useDispatch } from "react-redux";
+import { login } from "@/features/auth/authSlice";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, { message: "Too short" }).max(15, { message: "Too long" }),
+  password: z
+    .string()
+    .min(8, { message: "Too short" })
+    .max(15, { message: "Too long" }),
 });
 
 const Login = () => {
@@ -29,15 +40,18 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (values) => {
+    setSubmitting(true);
     const credentials = {
       email: values.email,
       password: values.password,
     };
     try {
       await dispatch(login(credentials)).unwrap();
-      navigate('/home');
+      setSubmitting(false);
+      navigate("/home");
     } catch (error) {
       toast.error(error.message);
     }
@@ -49,7 +63,11 @@ const Login = () => {
         to="/"
         className="flex items-center mb-6 text-lg lg:text-2xl font-bold text-white "
       >
-        <img className="w-6 h-6 lg:w-8 lg:h-8 mr-2" src="/assets/logo.png" alt="logo" />
+        <img
+          className="w-6 h-6 lg:w-8 lg:h-8 mr-2"
+          src="/assets/logo.png"
+          alt="logo"
+        />
         SNIPPIFY
       </Link>
       <div className="flex flex-col gap-10 rounded-xl shadow-2xl bg-white px-10 py-8 w-80 lg:w-96">
@@ -95,9 +113,22 @@ const Login = () => {
                 Register here
               </Link>
             </p>
-            <Button type="submit" className="w-full bg-rose-600 text-white hover:bg-rose-500">
-              Login
-            </Button>
+            {submitting ? (
+              <Button
+                type="submit"
+                className="w-full bg-rose-600 text-white hover:bg-rose-500"
+                disabled={submitting}
+              >
+                Loading...
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full bg-rose-600 text-white hover:bg-rose-500"
+              >
+                Login
+              </Button>
+            )}
           </form>
         </Form>
       </div>

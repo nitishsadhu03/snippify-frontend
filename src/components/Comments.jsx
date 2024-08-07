@@ -1,7 +1,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/utils/env";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,8 +12,43 @@ const Comments = ({ id, existingComments }) => {
   const user = useSelector((state) => state.auth.user);
   const [comment, setComment] = useState("");
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [profileData, setProfileData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState({})
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/users/${existingComments.user}/`);
+        setProfileData(response.data);
+
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    const fetchCurrentUserProfileData = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/users/${user.id}/`);
+        setProfileData(response.data);
+
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+    fetchCurrentUserProfileData();
+  }, [id, user.id]);
 
   const handleComment = async () => {
+    setSubmitting(true);
     const commentData = {
       user: user.id,
       snippet: id,
@@ -30,6 +65,7 @@ const Comments = ({ id, existingComments }) => {
       toast.error("Comment could not be added");
       console.log(error);
     } finally {
+      setSubmitting(false);
       setComment("");
       navigate("/home");
     }
@@ -48,12 +84,19 @@ const Comments = ({ id, existingComments }) => {
   // Create a copy of existingComments and reverse it
   const reversedComments = [...existingComments].reverse();
 
+  const currentUserProfileImageUrl = currentUserProfile?.image || "/assets/defaultProfile.png";
+
+  const profileImageUrl = profileData?.image || "/assets/defaultProfile.png";
+
+  console.log("Current user", currentUserProfile);
+  console.log("Another user", profileData)
+
   return (
     <div>
       <h1 className="text-xl font-semibold">Comments</h1>
       <div className="flex gap-3 my-6">
         <img
-          src="/assets/logo.png"
+          src={currentUserProfileImageUrl}
           alt="profile"
           className="h-10 w-10 rounded-full"
         />
@@ -64,20 +107,29 @@ const Comments = ({ id, existingComments }) => {
             onChange={(e) => setComment(e.target.value)}
             value={comment}
           />
-          <Button
-            className="bg-rose-600 text-white font-semibold hover:bg-rose-500 w-28"
-            onClick={handleComment}
-            type="submit"
-          >
-            Comment
-          </Button>
+          {submitting ? (
+            <Button
+              className="bg-rose-600 text-white font-semibold hover:bg-rose-500 w-28"
+              disabled={submitting}
+            >
+              Loading...
+            </Button>
+          ) : (
+            <Button
+              className="bg-rose-600 text-white font-semibold hover:bg-rose-500 w-28"
+              onClick={handleComment}
+              type="submit"
+            >
+              Comment
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-10 mt-10">
         {reversedComments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <img
-              src="/assets/logo.png"
+              src={profileImageUrl}
               alt="profile"
               className="h-8 w-8 rounded-full"
             />

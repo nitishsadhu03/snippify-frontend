@@ -3,17 +3,23 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { languageOptions } from "@/constants/languages";
 
-const LanguageDropdown = ({ onSelectChange }) => {
+const LanguageDropdown = ({ selectedLanguage, onSelectChange }) => {
   return (
-    <Select onValueChange={(value) => onSelectChange(languageOptions.find(option => option.value === value))}>
+    <Select
+      value={selectedLanguage.value}
+      onValueChange={(value) =>
+        onSelectChange(languageOptions.find((option) => option.value === value))
+      }
+    >
       <SelectTrigger className="w-[250px] bg-zinc-700 border-none text-white">
-        <SelectValue placeholder="Select Language" />
+        <SelectValue placeholder="Select Language">
+          {selectedLanguage.label}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent className="bg-zinc-700 border-none text-white">
         <SelectGroup>

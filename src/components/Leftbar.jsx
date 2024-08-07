@@ -36,7 +36,7 @@ const Leftbar = () => {
           <SquarePen />
           <p className="text-xl cursor-pointer">Create Snippet</p>
         </Link>
-        <Link className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
+        <Link to="/activity" className="flex gap-2 py-2 px-2 hover:bg-white hover:text-zinc-700 rounded-lg transition ease-in-out delay-150 hover:scale-110 duration-300">
           <BellRing />
           <p className="text-xl cursor-pointer">Activity</p>
         </Link>

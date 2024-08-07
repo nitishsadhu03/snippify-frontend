@@ -52,7 +52,7 @@ const Snippets = () => {
   }
 
   return (
-    <div className="text-white w-[84%] h-screen mt-4 py-9 px-8">
+    <div className="text-white w-[84%] h-full min-h-screen mt-4 py-9 px-8 bg-black">
       <h1 className="text-2xl font-bold">Snippets</h1>
       {snippets.length === 0 ? (
         <p>No snippets found.</p>

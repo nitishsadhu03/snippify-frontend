@@ -13,6 +13,9 @@ import SnippetPage from "./pages/SnippetPage";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import Search from "./pages/Search";
+import PublicProfile from "./pages/PublicProfile";
+import Activity from "./pages/Activity";
+import EditSnippet from "./pages/EditSnippet";
 
 setupAxiosInterceptors();
 
@@ -46,6 +49,10 @@ const router = createBrowserRouter([
     element: <SnippetPage/>,
   },
   {
+    path: "/edit-snippet/:id",
+    element: <EditSnippet/>,
+  },
+  {
     path: "/profile",
     element: <Profile/>,
   },
@@ -56,6 +63,14 @@ const router = createBrowserRouter([
   {
     path: "/search",
     element: <Search/>,
+  },
+  {
+    path: "/view-profile/:id",
+    element: <PublicProfile/>,
+  },
+  {
+    path: "/activity",
+    element: <Activity/>,
   },
 ]);
 

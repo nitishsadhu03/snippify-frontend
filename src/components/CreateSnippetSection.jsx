@@ -27,6 +27,7 @@ const CreateSnippetSection = () => {
   const [snippetDesc, setSnippetDesc] = useState("");
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState(languageOptions[0]);
+  const [submitting, setSubmitting] = useState(false);
 
   const onSelectChange = (sl) => {
     setLanguage(sl);
@@ -82,6 +83,7 @@ const CreateSnippetSection = () => {
   };
 
   const saveSnippet = async () => {
+    setSubmitting(true);
     const snippetData = {
       title: snippetName,
       description: snippetDesc,
@@ -111,6 +113,7 @@ const CreateSnippetSection = () => {
         snippetData
       );
       console.log("Snippet saved successfully:", response.data);
+      setSubmitting(false)
       toast.success("Snippet saved successfully!");
       navigate('/home');
     } catch (error) {
@@ -123,12 +126,22 @@ const CreateSnippetSection = () => {
     <section className="text-white w-[84%] h-full mt-4 py-9 px-9">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Create A New Snippet</h1>
+        {submitting ? (
+          <Button
+          className="text-md bg-rose-600 hover:bg-rose-500"
+          disabled={submitting}
+        >
+          Loading...
+        </Button>
+        ) : (
         <Button
           className="text-md bg-rose-600 hover:bg-rose-500"
           onClick={saveSnippet}
         >
           Save Snippet
         </Button>
+
+        )}
       </div>
       <div className="flex gap-4 items-center mt-8">
         <input

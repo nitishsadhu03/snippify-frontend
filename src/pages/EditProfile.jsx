@@ -26,11 +26,12 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/users/${id}`);
+        const response = await axios.get(`${BACKEND_URL}/api/users/${id}/`);
         setProfileData(response.data);
         setCroppedImageUrl(response.data.image || "/assets/defaultProfile.png");
         setLoading(false);
@@ -126,6 +127,7 @@ const EditProfile = () => {
   };
 
   const handleSave = async () => {
+    setSubmitting(true);
     const formData = new FormData();
     if (finalImageFile) {
       formData.append("image", finalImageFile);
@@ -139,8 +141,9 @@ const EditProfile = () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      setSubmitting(false);
       toast.success("Profile updated successfully!");
-      navigate("/profile")
+      navigate("/profile");
     } catch (error) {
       console.error("Error saving profile image", error);
       toast.error("Error saving profile image");
@@ -240,7 +243,6 @@ const EditProfile = () => {
               </div>
             )}
             <div className="w-full max-w-xl">
-              
               <div className="mb-4">
                 <label className="block text-white mb-2">Bio</label>
                 <textarea
@@ -261,17 +263,26 @@ const EditProfile = () => {
                   placeholder="Enter tech stack, separated by commas"
                 />
               </div>
-              <Button
-                onClick={handleSave}
-                className="text-white px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-500 mt-4"
-              >
-                Save
-              </Button>
+              {submitting ? (
+                <Button
+                  disabled={submitting}
+                  className="text-white px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-500 mt-4"
+                >
+                  Loading...
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSave}
+                  className="text-white px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-500 mt-4"
+                >
+                  Save
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </section>
   );
 };

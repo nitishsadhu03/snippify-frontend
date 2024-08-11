@@ -42,15 +42,22 @@ const EditSnippet = () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/snippets/${id}`);
         const snippetData = response.data;
+        console.log(snippetData);
         setSnippetName(snippetData.title);
         setSnippetDesc(snippetData.description);
-        setCodeFileComponents(snippetData.codes.map(code => ({
-          title: code.title,
-          fileName: code.file_name,
-          visibility: code.visibility,
-          language: languageOptions.find(opt => opt.label.includes(code.language)) || languageOptions[0],
-          codeContent: code.code_content,
-        })));
+        setCodeFileComponents(
+          snippetData.codes.map((code) => ({
+            id: code.id,
+            title: code.title,
+            fileName: code.file_name,
+            visibility: code.visibility,
+            language:
+              languageOptions.find((opt) =>
+                opt.label.includes(code.language)
+              ) || languageOptions[0],
+            codeContent: code.code_content,
+          }))
+        );
       } catch (error) {
         toast.error("Error fetching snippet details!");
         console.error("Error fetching snippet:", error);
@@ -65,6 +72,7 @@ const EditSnippet = () => {
     newCodeFileComponents[index][field] = value;
     setCodeFileComponents(newCodeFileComponents);
   };
+  
 
   const addCodeFileComponent = () => {
     if (codeFileComponents.length < 5) {
@@ -92,30 +100,37 @@ const EditSnippet = () => {
     const snippetData = {
       title: snippetName,
       description: snippetDesc,
-      language: codeFileComponents.map((component) => component.language.label.split(" ")[0]),
       updated_at: new Date().toISOString(),
-      codes: codeFileComponents.map((component) => ({
-        title: component.title,
-        file_name: component.fileName,
-        description: component.title,
-        language: component.language.label.split(" ")[0],
-        updated_at: new Date().toISOString(),
-        visibility: component.visibility,
-        code_content: component.codeContent,
-        numberOfLines: component.codeContent.split("\n").length,
-      })),
     };
 
     try {
-      const response = await axios.patch(
-        `${BACKEND_URL}/api/snippets/${id}/`,
-        snippetData
-      );
-      console.log("Snippet updated successfully:", response.data);
+      // Update the snippet title and description
+      await axios.patch(`${BACKEND_URL}/api/snippets/${id}/`, snippetData);
+
+      // Update each code block individually
+      for (const component of codeFileComponents) {
+        const codeData = {
+          title: component.title,
+          file_name: component.fileName,
+          description: component.title,
+          language: component.language.label.split(" ")[0],
+          updated_at: new Date().toISOString(),
+          visibility: component.visibility,
+          code_content: component.codeContent,
+          numberOfLines: component.codeContent.split("\n").length,
+        };
+
+        await axios.patch(
+          `${BACKEND_URL}/api/codes/${component.id}/`,
+          codeData
+        ); // Use component.id here
+      }
+
       setSubmitting(false);
       toast.success("Snippet updated successfully!");
-      navigate('/home');
+      navigate("/home");
     } catch (error) {
+      setSubmitting(false);
       toast.error("Error updating snippet!");
       console.error("Error updating snippet:", error);
     }
@@ -137,7 +152,10 @@ const EditSnippet = () => {
                 Loading...
               </Button>
             ) : (
-              <Button className="text-md bg-rose-600 hover:bg-rose-500" onClick={saveSnippet}>
+              <Button
+                className="text-md bg-rose-600 hover:bg-rose-500"
+                onClick={saveSnippet}
+              >
                 Save Snippet
               </Button>
             )}
@@ -211,23 +229,23 @@ const EditSnippet = () => {
                       </Select>
                     </div>
                     <div className="flex gap-4">
-                  {codeFileComponents.length < 5 && (
-                    <Button
-                      className=" bg-rose-600 hover:bg-rose-500 text-md"
-                      onClick={addCodeFileComponent}
-                    >
-                      Add File
-                    </Button>
-                  )}
-                  {codeFileComponents.length > 1 && (
-                    <Button
-                      className="bg-rose-600 hover:bg-rose-500 text-md"
-                      onClick={() => removeCodeFileComponent(index)}
-                    >
-                      Remove File
-                    </Button>
-                  )}
-                </div>
+                      {codeFileComponents.length < 5 && (
+                        <Button
+                          className=" bg-rose-600 hover:bg-rose-500 text-md"
+                          onClick={addCodeFileComponent}
+                        >
+                          Add File
+                        </Button>
+                      )}
+                      {codeFileComponents.length > 1 && (
+                        <Button
+                          className="bg-rose-600 hover:bg-rose-500 text-md"
+                          onClick={() => removeCodeFileComponent(index)}
+                        >
+                          Remove File
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <CodeEditorWindow
@@ -235,7 +253,7 @@ const EditSnippet = () => {
                   language={component.language.value}
                   onChange={(code) =>
                     handleInputChange(index, "codeContent", code)
-                  }
+                  } // Correctly update codeContent
                 />
               </div>
             ))}

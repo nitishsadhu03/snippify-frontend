@@ -87,7 +87,9 @@ const CreateSnippetSection = () => {
     const snippetData = {
       title: snippetName,
       description: snippetDesc,
-      language: codeFileComponents.map((component) => component.language.label.split(" ")[0]),
+      language: codeFileComponents.map(
+        (component) => component.language.label.split(" ")[0]
+      ),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       owner: user.id,
@@ -107,18 +109,27 @@ const CreateSnippetSection = () => {
 
     console.log(snippetData);
 
+    // Ensure there are no empty code content entries
+    const hasEmptyCode = snippetData.codes.some((code) => !code.code_content);
+    if (hasEmptyCode) {
+      toast.error("Code content cannot be empty!");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/snippets/`,
         snippetData
       );
       console.log("Snippet saved successfully:", response.data);
-      setSubmitting(false)
       toast.success("Snippet saved successfully!");
-      navigate('/home');
+      navigate("/home");
     } catch (error) {
       toast.error("Error saving snippet!");
       console.error("Error saving snippet:", error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -128,19 +139,18 @@ const CreateSnippetSection = () => {
         <h1 className="text-2xl font-bold">Create A New Snippet</h1>
         {submitting ? (
           <Button
-          className="text-md bg-rose-600 hover:bg-rose-500"
-          disabled={submitting}
-        >
-          Loading...
-        </Button>
+            className="text-md bg-rose-600 hover:bg-rose-500"
+            disabled={submitting}
+          >
+            Loading...
+          </Button>
         ) : (
-        <Button
-          className="text-md bg-rose-600 hover:bg-rose-500"
-          onClick={saveSnippet}
-        >
-          Save Snippet
-        </Button>
-
+          <Button
+            className="text-md bg-rose-600 hover:bg-rose-500"
+            onClick={saveSnippet}
+          >
+            Save Snippet
+          </Button>
         )}
       </div>
       <div className="flex gap-4 items-center mt-8">
@@ -228,11 +238,9 @@ const CreateSnippetSection = () => {
               <div className="mt-6 w-full h-96 flex flex-col justify-center gap-3">
                 <CodeEditorWindow
                   code={component.codeContent}
-                  onChange={(action, data) => {
-                    if (action === "code") {
-                      handleInputChange(index, "codeContent", data);
-                    }
-                  }}
+                  onChange={(code) =>
+                    handleInputChange(index, "codeContent", code)
+                  }
                   language={component.language?.value}
                 />
               </div>

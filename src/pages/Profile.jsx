@@ -14,16 +14,26 @@ import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { setCurrentSnippet } from "@/features/snippets/snippetSlice";
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    if (!accessToken) {
+      console.log(!accessToken);
+      navigate("/");
+    }
+  }, []);
+
   const user = useSelector((state) => state.auth.user);
   const [profileData, setProfileData] = useState({});
   const [snippets, setSnippets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProfileData = async () => {
+      if (!user) return;
       try {
         const response = await axios.get(`${BACKEND_URL}/api/users/${user.id}`);
         const profile = response.data;
@@ -45,9 +55,17 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [user.id]);
+  }, [user]);
 
   console.log("Snippets:", snippets);
+
+  if (!user) {
+    return (
+      <div className="text-white w-[84%] h-screen mt-14 py-9 px-8">
+        Redirecting...
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -74,6 +92,14 @@ const Profile = () => {
     navigate(`/snippet/${snippet.id}`);
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  };
+
   return (
     <section className="bg-black">
       <Topbar />
@@ -90,7 +116,7 @@ const Profile = () => {
             </Button>
           </div>
           <div className="flex justify-center items-center">
-            <div className="my-16 bg-gradient-to-b from-zinc-800 to-zinc-500 rounded-2xl w-1/2">
+            <div className="my-16 bg-gradient-to-b from-zinc-900 to-zinc-600 rounded-2xl w-1/2">
               <div className="flex items-center justify-center w-full ">
                 <img
                   src={profileData.image || "/assets/defaultProfile.png"}
@@ -159,7 +185,27 @@ const Profile = () => {
                     className="flex flex-col gap-2 rounded-lg px-4 py-4 bg-gradient-to-b from-zinc-800 to-zinc-500"
                   >
                     <div className="mb-1 rounded-lg h-72 overflow-hidden flex flex-col justify-between p-2">
-                      <div className="">
+                      <div className="flex justify-between items-center -mt-2 bg-zinc-900 px-3 py-2 rounded-lg">
+                        <div className="flex gap-2 items-center">
+                          <img
+                            src={
+                              snippet.owner.image ||
+                              "/assets/defaultProfile.png"
+                            }
+                            alt="profile"
+                            className="h-7 w-7 rounded-full"
+                          />
+                          <p className="font-semibold">
+                            {snippet.owner.user.name}
+                          </p>
+                        </div>
+                        <div className="">
+                          <p className="w-full font-semibold">
+                            created on {formatDate(snippet.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-2">
                         <h2 className="text-xl font-semibold">
                           {snippet.title}
                         </h2>
@@ -178,7 +224,7 @@ const Profile = () => {
                           {snippet.codes.map((code, index) => (
                             <div
                               key={index}
-                              className="flex flex-col my-6 overflow-hidden"
+                              className="flex flex-col overflow-hidden"
                             >
                               <SyntaxHighlighter
                                 language={code.language}
@@ -194,10 +240,13 @@ const Profile = () => {
                         </pre>
                       </div>
                     </div>
-                    <button onClick={() => handleViewFullSnippet(snippet)} className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-lg">
+                    <button
+                      onClick={() => handleViewFullSnippet(snippet)}
+                      className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold py-2.5 px-4 rounded-lg"
+                    >
                       <p>View Full Snippet</p>
                     </button>
-                    <div className="bg-zinc-800 flex justify-evenly py-2.5 px-2 rounded-lg">
+                    <div className="bg-zinc-900 flex justify-evenly py-2.5 px-2 rounded-lg">
                       <p className="flex gap-2 items-center justify-center">
                         <Heart className="text-rose-600 fill-rose-600" />
                         {snippet.liked_by_count}

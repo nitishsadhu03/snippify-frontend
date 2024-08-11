@@ -1,8 +1,22 @@
 import Leftbar from '@/components/Leftbar'
 import Topbar from '@/components/Topbar'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
+
 
 const Activity = () => {
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem("accessToken");
+  
+  
+  useEffect(() => {
+    if(!accessToken) {
+      console.log(!accessToken)
+      navigate("/")
+    }
+
+  }, [])
+
   return (
     <section className="bg-black">
       <Topbar />

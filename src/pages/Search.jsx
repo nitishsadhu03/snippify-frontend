@@ -4,16 +4,30 @@ import { Button } from "@/components/ui/button";
 import { BACKEND_URL } from "@/utils/env";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SearchIcon } from "lucide-react";
 
 const Search = () => {
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem("accessToken");
+  
+  
+  useEffect(() => {
+    if(!accessToken) {
+      console.log(!accessToken)
+      navigate("/")
+    }
+
+  }, []);
+  
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef(null);
+
 
   useEffect(() => {
     const fetchUsers = async () => {

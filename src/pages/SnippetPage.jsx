@@ -1,7 +1,7 @@
 import Comments from "@/components/Comments";
 import Leftbar from "@/components/Leftbar";
 import Topbar from "@/components/Topbar";
-import { FileJson, Heart, Pencil, Share2, Trash } from "lucide-react";
+import { Bookmark, FileJson, Heart, Pencil, Share2, Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -17,6 +17,8 @@ const SnippetPage = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savedSnippetId, setSavedSnippetId] = useState(null);
   const navigate = useNavigate();
 
   const fetchLikeData = async () => {
@@ -46,9 +48,26 @@ const SnippetPage = () => {
     }
   };
 
+  const checkIfSnippetIsSaved = async () => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/api/saved-snippet/?user=${user.id}&snippet=${currentSnippet.id}`
+      );
+      const savedSnippets = response.data;
+
+      if (savedSnippets.length > 0) {
+        setIsSaved(savedSnippets[0].is_saved);
+        setSavedSnippetId(savedSnippets[0].id);
+      }
+    } catch (error) {
+      console.error("Error checking saved snippet status:", error);
+    }
+  };
+
   useEffect(() => {
     if (currentSnippet && user) {
       fetchLikeData();
+      checkIfSnippetIsSaved();
     }
   }, [currentSnippet, user]);
 
@@ -84,6 +103,27 @@ const SnippetPage = () => {
       }
     } catch (error) {
       console.error("Error updating like status:", error);
+    }
+  };
+
+  const handleSaveSnippet = async () => {
+    try {
+      if (savedSnippetId) {
+        await axios.patch(`${BACKEND_URL}/api/saved-snippet/${savedSnippetId}/`, {
+          is_saved: !isSaved,
+        });
+        setIsSaved(!isSaved);
+      } else {
+        const response = await axios.post(`${BACKEND_URL}/api/saved-snippet/`, {
+          user: user.id,
+          snippet: currentSnippet.id,
+          is_saved: true,
+        });
+        setIsSaved(true);
+        setSavedSnippetId(response.data.id);
+      }
+    } catch (error) {
+      console.error("Error saving snippet:", error);
     }
   };
 
@@ -146,16 +186,16 @@ const SnippetPage = () => {
                   ))}
                 </div>
               </div>
-              {user.id === currentSnippet.owner && (
+              {user.id === currentSnippet.owner.id && (
                 <div className="flex gap-4 items-start">
                   <Link
                     to={`/edit-snippet/${currentSnippet.id}`}
-                    className="bg-zinc-700 rounded-lg p-3 w-fit h-fit cursor-pointer"
+                    className="bg-zinc-800 rounded-lg p-3 w-fit h-fit cursor-pointer"
                   >
                     <Pencil className="text-green-600 transition ease-in-out delay-150 hover:scale-125 duration-300" />
                   </Link>
                   <div
-                    className="bg-zinc-700 rounded-lg p-3 w-fit h-fit cursor-pointer"
+                    className="bg-zinc-800 rounded-lg p-3 w-fit h-fit cursor-pointer"
                     onClick={() => setIsModalOpen(true)}
                   >
                     <Trash className="text-red-600 transition ease-in-out delay-150 hover:scale-125 duration-300" />
@@ -166,7 +206,7 @@ const SnippetPage = () => {
             <div className="flex flex-col gap-3 justify-center items-center">
               <div className="flex gap-4">
                 <div
-                  className="bg-zinc-700 rounded-lg p-3 w-fit h-fit cursor-pointer"
+                  className="bg-zinc-800 rounded-lg p-3 w-fit h-fit cursor-pointer"
                   onClick={handleLike}
                 >
                   <Heart
@@ -175,12 +215,19 @@ const SnippetPage = () => {
                     } transition ease-in-out delay-150 hover:scale-125 duration-300`}
                   />
                 </div>
-                <div className="bg-zinc-700 rounded-lg p-3 w-fit h-fit">
-                  <Share2 className="text-green-600 transition ease-in-out delay-150 hover:scale-125 duration-300" />
+                <div
+                  className="bg-zinc-800 rounded-lg p-3 w-fit h-fit cursor-pointer"
+                  onClick={handleSaveSnippet}
+                >
+                  <Bookmark
+                    className={`${
+                      isSaved ? "text-green-600 fill-green-600" : "text-green-600"
+                    } transition ease-in-out delay-150 hover:scale-125 duration-300`}
+                  />
                 </div>
               </div>
               <div className="w-full">
-                <p className="bg-zinc-700 rounded-lg px-2 py-1 w-full">
+                <p className="bg-zinc-800 rounded-lg px-2 py-1 w-full">
                   {formattedDate}
                 </p>
               </div>

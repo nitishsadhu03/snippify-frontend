@@ -98,7 +98,7 @@ const Topbar = () => {
           </DropdownMenu>
         )
       )}
-      {error && <p className="text-red-500">Error: {error}</p>}
+      {/* {error && <p className="text-red-500">Error: {error}</p>} */}
     </section>
   );
 };

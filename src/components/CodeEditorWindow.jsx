@@ -10,7 +10,7 @@ const CodeEditorWindow = ({ onChange, language, code }) => {
 
   const handleEditorChange = (value) => {
     setValue(value);
-    onChange(value); 
+    onChange(value);
   };
 
   return (
@@ -26,5 +26,6 @@ const CodeEditorWindow = ({ onChange, language, code }) => {
     </div>
   );
 };
+
 
 export default CodeEditorWindow;

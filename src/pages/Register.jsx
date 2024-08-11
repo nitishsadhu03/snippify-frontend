@@ -62,11 +62,12 @@ const Register = () => {
     };
     try {
       await dispatch(register(userData)).unwrap();
-      setSubmitting(false);
       toast.success("An Activation mail has been sent to your email");
       navigate("/");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 

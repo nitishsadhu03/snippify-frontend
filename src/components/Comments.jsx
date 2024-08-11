@@ -16,24 +16,13 @@ const Comments = ({ id, existingComments }) => {
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentUserProfile, setCurrentUserProfile] = useState({})
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/users/${existingComments.user}/`);
-        setProfileData(response.data);
-
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    const fetchCurrentUserProfileData = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/api/users/${user.id}/`);
+        const response = await axios.get(
+          `${BACKEND_URL}/api/users/${user.id}/`
+        );
         setProfileData(response.data);
 
         setLoading(false);
@@ -44,13 +33,16 @@ const Comments = ({ id, existingComments }) => {
     };
 
     fetchProfileData();
-    fetchCurrentUserProfileData();
-  }, [id, user.id]);
+  }, [user.id]);
+
+  console.log(existingComments)
 
   const handleComment = async () => {
     setSubmitting(true);
     const commentData = {
-      user: user.id,
+      user: {
+        id: user.id,
+      },
       snippet: id,
       comment_text: comment,
     };
@@ -61,17 +53,15 @@ const Comments = ({ id, existingComments }) => {
         commentData
       );
       toast.success("Comment added successfully!");
+      setComment("");
+      navigate("/home");
     } catch (error) {
       toast.error("Comment could not be added");
       console.log(error);
     } finally {
       setSubmitting(false);
-      setComment("");
-      navigate("/home");
     }
   };
-
-  console.log(existingComments);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -81,22 +71,16 @@ const Comments = ({ id, existingComments }) => {
     return `${day} ${month}, ${year}`;
   };
 
-  // Create a copy of existingComments and reverse it
   const reversedComments = [...existingComments].reverse();
 
-  const currentUserProfileImageUrl = currentUserProfile?.image || "/assets/defaultProfile.png";
-
   const profileImageUrl = profileData?.image || "/assets/defaultProfile.png";
-
-  console.log("Current user", currentUserProfile);
-  console.log("Another user", profileData)
 
   return (
     <div>
       <h1 className="text-xl font-semibold">Comments</h1>
       <div className="flex gap-3 my-6">
         <img
-          src={currentUserProfileImageUrl}
+          src={profileImageUrl}
           alt="profile"
           className="h-10 w-10 rounded-full"
         />
@@ -129,7 +113,7 @@ const Comments = ({ id, existingComments }) => {
         {reversedComments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <img
-              src={profileImageUrl}
+              src="/assets/defaultProfile.png"
               alt="profile"
               className="h-8 w-8 rounded-full"
             />

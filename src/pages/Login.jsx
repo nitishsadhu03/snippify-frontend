@@ -50,10 +50,11 @@ const Login = () => {
     };
     try {
       await dispatch(login(credentials)).unwrap();
-      setSubmitting(false);
       navigate("/home");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 

@@ -23,11 +23,12 @@ const Activation = () => {
         `${BACKEND_URL}/api/auth/users/activation/`,
         activationData
       );
-      setSubmitting(false);
       toast.success("Account Activated");
       navigate("/login");
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 

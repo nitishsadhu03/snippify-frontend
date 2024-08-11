@@ -11,15 +11,12 @@ import { languageOptions } from "@/constants/languages";
 const LanguageDropdown = ({ selectedLanguage, onSelectChange }) => {
   return (
     <Select
-      value={selectedLanguage.value}
       onValueChange={(value) =>
         onSelectChange(languageOptions.find((option) => option.value === value))
       }
     >
       <SelectTrigger className="w-[250px] bg-zinc-700 border-none text-white">
-        <SelectValue placeholder="Select Language">
-          {selectedLanguage.label}
-        </SelectValue>
+        <SelectValue placeholder={selectedLanguage ? selectedLanguage.label : "Select Language"} />
       </SelectTrigger>
       <SelectContent className="bg-zinc-700 border-none text-white">
         <SelectGroup>
